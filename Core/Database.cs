@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 
 namespace DatabaseWrapper.Core {
     public abstract class Database : IDatabase {
@@ -42,6 +43,13 @@ namespace DatabaseWrapper.Core {
             }
         }
 
+        protected void PrepareParams(IDbCommand command, Dictionary<string, object> parameters) {
+            command.Prepare();
+            foreach (KeyValuePair<string, object> kvp in parameters) {
+                command.AddWithValue($"@{kvp.Key}", kvp.Value);
+            }
+        }
+
         #region Abstract methods
 
         /// <summary>
@@ -50,7 +58,7 @@ namespace DatabaseWrapper.Core {
         /// <param name="connectionString">The connection string.</param>
         /// <returns></returns>
         public abstract IDbConnection CreateConnection(string connectionString);
-
+    
         /// <summary>
         /// Creates the open connection.
         /// </summary>
@@ -61,12 +69,12 @@ namespace DatabaseWrapper.Core {
         /// <summary>
         /// Opens the connection.
         /// </summary>
-        public abstract void OpenConnection();
+        public abstract void OpenConnection(IDbConnection connection);
 
         /// <summary>
         /// Closes the connection.
         /// </summary>
-        public abstract void CloseConnection();
+        public abstract void CloseConnection(IDbConnection connection);
 
         /// <summary>
         /// Creates the command.
@@ -78,9 +86,25 @@ namespace DatabaseWrapper.Core {
         /// Creates the command.
         /// </summary>
         /// <param name="commandText">The command text.</param>
+        /// <returns></returns>
+        public abstract IDbCommand CreateCommand(string commandText);
+
+        /// <summary>
+        /// Creates the command.
+        /// </summary>
+        /// <param name="commandText">The command text.</param>
         /// <param name="connection">The connection.</param>
         /// <returns></returns>
         public abstract IDbCommand CreateCommand(string commandText, IDbConnection connection);
+
+        /// <summary>
+        /// Creates the command.
+        /// </summary>
+        /// <param name="commandText">The command text.</param>
+        /// <param name="connection">The connection.</param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public abstract IDbCommand CreateCommand(string commandText, IDbConnection connection, Dictionary<string, object> parameters);
 
         /// <summary>
         /// Creates the stored proc command.
@@ -101,12 +125,15 @@ namespace DatabaseWrapper.Core {
         /// <summary>
         /// Begins the transaction.
         /// </summary>
-        public abstract void BeginTransaction();
+        /// <param name="connection"></param>
+        /// <returns></returns>
+        public abstract IDbTransaction BeginTransaction(IDbConnection connection);
 
         /// <summary>
         /// Commits the transaction.
         /// </summary>
-        public abstract void CommitTransaction();
+        /// <param name="transaction"></param>
+        public abstract void CommitTransaction(IDbTransaction transaction);
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

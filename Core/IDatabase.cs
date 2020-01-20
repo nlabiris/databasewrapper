@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace DatabaseWrapper.Core {
@@ -20,12 +21,12 @@ namespace DatabaseWrapper.Core {
         /// <summary>
         /// Opens the connection.
         /// </summary>
-        void OpenConnection();
+        void OpenConnection(IDbConnection connection);
 
         /// <summary>
         /// Closes the connection.
         /// </summary>
-        void CloseConnection();
+        void CloseConnection(IDbConnection connection);
 
         /// <summary>
         /// Creates the command.
@@ -37,9 +38,25 @@ namespace DatabaseWrapper.Core {
         /// Creates the command.
         /// </summary>
         /// <param name="commandText">The command text.</param>
+        /// <returns></returns>
+        IDbCommand CreateCommand(string commandText);
+
+        /// <summary>
+        /// Creates the command.
+        /// </summary>
+        /// <param name="commandText">The command text.</param>
         /// <param name="connection">The connection.</param>
         /// <returns></returns>
         IDbCommand CreateCommand(string commandText, IDbConnection connection);
+
+        /// <summary>
+        /// Creates the command.
+        /// </summary>
+        /// <param name="commandText">The command text.</param>
+        /// <param name="connection">The connection.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        IDbCommand CreateCommand(string commandText, IDbConnection connection, Dictionary<string, object> parameters);
 
         /// <summary>
         /// Creates the stored proc command.
@@ -60,12 +77,15 @@ namespace DatabaseWrapper.Core {
         /// <summary>
         /// Begins the transaction.
         /// </summary>
-        void BeginTransaction();
+        /// <param name="connection">The connection.</param>
+        /// <returns></returns>
+        IDbTransaction BeginTransaction(IDbConnection connection);
 
         /// <summary>
         /// Commits the transaction.
         /// </summary>
-        void CommitTransaction();
+        /// <param name="transaction">The transaction.</param>
+        void CommitTransaction(IDbTransaction transaction);
 
         /// <summary>
         /// Creates the data adapter.

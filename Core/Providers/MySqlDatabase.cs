@@ -12,25 +12,28 @@ namespace DatabaseWrapper.Core.Providers {
         /// <summary>
         /// Begins the transaction.
         /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void BeginTransaction() {
-            throw new NotImplementedException();
+        /// <param name="connection">The connection.</param>
+        /// <returns></returns>
+        public override IDbTransaction BeginTransaction(IDbConnection connection) {
+            return connection.BeginTransaction();
         }
 
         /// <summary>
         /// Closes the connection.
         /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void CloseConnection() {
-            throw new NotImplementedException();
+        /// <param name="connection"></param>
+        public override void CloseConnection(IDbConnection connection) {
+            if (connection.State == ConnectionState.Open) {
+                connection.Close();
+            }
         }
 
         /// <summary>
         /// Commits the transaction.
         /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void CommitTransaction() {
-            throw new NotImplementedException();
+        /// <param name="transaction">The transaction.</param>
+        public override void CommitTransaction(IDbTransaction transaction) {
+            transaction.Commit();
         }
 
         /// <summary>
@@ -45,10 +48,33 @@ namespace DatabaseWrapper.Core.Providers {
         /// Creates the command.
         /// </summary>
         /// <param name="commandText">The command text.</param>
+        /// <returns></returns>
+        public override IDbCommand CreateCommand(string commandText) {
+            return new MySqlCommand(commandText);
+        }
+
+        /// <summary>
+        /// Creates the command.
+        /// </summary>
+        /// <param name="commandText">The command text.</param>
         /// <param name="connection">The connection.</param>
         /// <returns></returns>
         public override IDbCommand CreateCommand(string commandText, IDbConnection connection) {
             return new MySqlCommand(commandText, (MySqlConnection)connection);
+        }
+
+        /// <summary>
+        /// Creates the command.
+        /// </summary>
+        /// <param name="commandText">The command text.</param>
+        /// <param name="connection">The connection.</param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public override IDbCommand CreateCommand(string commandText, IDbConnection connection, Dictionary<string, object> parameters) {
+            IDbCommand command = new MySqlCommand(commandText, (MySqlConnection)connection);
+            this.PrepareParams(command, parameters);
+
+            return command;
         }
 
         /// <summary>
@@ -136,9 +162,11 @@ namespace DatabaseWrapper.Core.Providers {
         /// <summary>
         /// Opens the connection.
         /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void OpenConnection() {
-            throw new NotImplementedException();
+        /// <param name="connection">The connection.</param>
+        public override void OpenConnection(IDbConnection connection) {
+            if (connection.State == ConnectionState.Closed) {
+                connection.Open();
+            }
         }
     }
 }
