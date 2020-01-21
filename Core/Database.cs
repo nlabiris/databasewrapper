@@ -43,6 +43,11 @@ namespace DatabaseWrapper.Core {
             }
         }
 
+        /// <summary>
+        /// Prepares the parameters.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <param name="parameters">The parameters.</param>
         protected void PrepareParams(IDbCommand command, Dictionary<string, object> parameters) {
             command.Prepare();
             foreach (KeyValuePair<string, object> kvp in parameters) {
