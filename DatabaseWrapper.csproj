@@ -67,6 +67,7 @@
     <Compile Include="Core\QueryGenerator\ClauseType.cs" />
     <Compile Include="Core\QueryGenerator\JoinType.cs" />
     <Compile Include="Core\QueryGenerator\OrderType.cs" />
+    <Compile Include="Helper\Utility.cs" />
     <Compile Include="Mapping\Attributes\DataNamesAttribute.cs" />
     <Compile Include="Core\Database.cs" />
     <Compile Include="Core\DatabaseConfiguration.cs" />
