@@ -60,10 +60,22 @@ namespace DatabaseWrapper.Core {
         /// <summary>
         /// Creates the connection.
         /// </summary>
+        /// <returns></returns>
+        public abstract IDbConnection CreateConnection();
+
+        /// <summary>
+        /// Creates the connection.
+        /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <returns></returns>
         public abstract IDbConnection CreateConnection(string connectionString);
-    
+
+        /// <summary>
+        /// Creates the open connection.
+        /// </summary>
+        /// <returns></returns>
+        public abstract IDbConnection CreateOpenConnection();
+
         /// <summary>
         /// Creates the open connection.
         /// </summary>
@@ -74,11 +86,13 @@ namespace DatabaseWrapper.Core {
         /// <summary>
         /// Opens the connection.
         /// </summary>
+        /// <param name="connection"></param>
         public abstract void OpenConnection(IDbConnection connection);
 
         /// <summary>
         /// Closes the connection.
         /// </summary>
+        /// <param name="connection"></param>
         public abstract void CloseConnection(IDbConnection connection);
 
         /// <summary>

@@ -10,9 +10,9 @@ namespace DatabaseWrapper.Core {
         /// <param name="connectionString">The connection string.</param>
         /// <returns></returns>
         /// <exception cref="Exception">Error instantiating database: " + db + ". " + ex.Message</exception>
-        public static IDatabase CreateDatabase() {
-            string db = DatabaseConfiguration.GetDatabaseNamespace();
-            DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
+        public static IDatabase CreateDatabase(string provider, string connectionString) {
+            string db = DatabaseConfiguration.GetDatabaseNamespace(provider);
+            DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration(connectionString);
             try {
                 // Find the class
                 Type database = Type.GetType(db);

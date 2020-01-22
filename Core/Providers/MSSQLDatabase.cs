@@ -1,5 +1,4 @@
-﻿using DatabaseWrapper.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -77,10 +76,29 @@ namespace DatabaseWrapper.Core.Providers {
         /// <summary>
         /// Creates the connection.
         /// </summary>
+        /// <returns></returns>
+        public override IDbConnection CreateConnection() {
+            return new SqlConnection(Configuration.ConnectionString);
+        }
+
+        /// <summary>
+        /// Creates the connection.
+        /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <returns></returns>
-        public override IDbConnection CreateConnection(string connectionString = "") {
-            return new SqlConnection(string.IsNullOrEmpty(connectionString) ? Settings.Default.DatabaseConnectionString : connectionString);
+        public override IDbConnection CreateConnection(string connectionString) {
+            return new SqlConnection(connectionString);
+        }
+
+        /// <summary>
+        /// Creates the open connection.
+        /// </summary>
+        /// <returns></returns>
+        public override IDbConnection CreateOpenConnection() {
+            SqlConnection connection = new SqlConnection(Configuration.ConnectionString);
+            connection.Open();
+
+            return connection;
         }
 
         /// <summary>
@@ -88,8 +106,8 @@ namespace DatabaseWrapper.Core.Providers {
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <returns></returns>
-        public override IDbConnection CreateOpenConnection(string connectionString = "") {
-            SqlConnection connection = new SqlConnection(string.IsNullOrEmpty(connectionString) ? Settings.Default.DatabaseConnectionString : connectionString);
+        public override IDbConnection CreateOpenConnection(string connectionString) {
+            SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
 
             return connection;

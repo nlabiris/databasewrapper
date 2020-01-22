@@ -1,5 +1,4 @@
-﻿using DatabaseWrapper.Properties;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -80,10 +79,29 @@ namespace DatabaseWrapper.Core.Providers {
         /// <summary>
         /// Creates the connection.
         /// </summary>
+        /// <returns></returns>
+        public override IDbConnection CreateConnection() {
+            return new MySqlConnection(Configuration.ConnectionString);
+        }
+
+        /// <summary>
+        /// Creates the connection.
+        /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <returns></returns>
-        public override IDbConnection CreateConnection(string connectionString = "") {
-            return new MySqlConnection(string.IsNullOrEmpty(connectionString) ? Settings.Default.DatabaseConnectionString : connectionString);
+        public override IDbConnection CreateConnection(string connectionString) {
+            return new MySqlConnection(connectionString);
+        }
+
+        /// <summary>
+        /// Creates the open connection.
+        /// </summary>
+        /// <returns></returns>
+        public override IDbConnection CreateOpenConnection() {
+            MySqlConnection connection = new MySqlConnection(Configuration.ConnectionString);
+            connection.Open();
+
+            return connection;
         }
 
         /// <summary>
@@ -91,8 +109,8 @@ namespace DatabaseWrapper.Core.Providers {
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <returns></returns>
-        public override IDbConnection CreateOpenConnection(string connectionString = "") {
-            MySqlConnection connection = new MySqlConnection(string.IsNullOrEmpty(connectionString) ? Settings.Default.DatabaseConnectionString : connectionString);
+        public override IDbConnection CreateOpenConnection(string connectionString) {
+            MySqlConnection connection = new MySqlConnection(connectionString);
             connection.Open();
 
             return connection;

@@ -7,25 +7,39 @@ namespace DatabaseWrapper.Core {
         /// <summary>
         /// Creates the connection.
         /// </summary>
+        /// <returns></returns>
+        IDbConnection CreateConnection();
+
+        /// <summary>
+        /// Creates the connection.
+        /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <returns></returns>
-        IDbConnection CreateConnection(string connectionString = "");
-        
+        IDbConnection CreateConnection(string connectionString);
+
+        /// <summary>
+        /// Creates the open connection.
+        /// </summary>
+        /// <returns></returns>
+        IDbConnection CreateOpenConnection();
+
         /// <summary>
         /// Creates the open connection.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <returns></returns>
-        IDbConnection CreateOpenConnection(string connectionString = "");
+        IDbConnection CreateOpenConnection(string connectionString);
 
         /// <summary>
         /// Opens the connection.
         /// </summary>
+        /// <param name="connection">The connection.</param>
         void OpenConnection(IDbConnection connection);
 
         /// <summary>
         /// Closes the connection.
         /// </summary>
+        /// <param name="connection">The connection.</param>
         void CloseConnection(IDbConnection connection);
 
         /// <summary>

@@ -22,9 +22,9 @@ namespace DatabaseWrapper.Core {
         /// </summary>
         /// <param name="provider">The provider.</param>
         /// <param name="connectionString">The connection string.</param>
-        public DataWorker() {
+        public DataWorker(string provider, string connectionString) {
             try {
-                _database = DatabaseFactory.CreateDatabase();
+                _database = DatabaseFactory.CreateDatabase(provider, connectionString);
             } catch (Exception ex) {
                 throw ex;
             }
