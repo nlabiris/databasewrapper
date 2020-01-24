@@ -59,7 +59,10 @@ namespace DatabaseWrapper.Core.Providers {
         /// <param name="connection">The connection.</param>
         /// <returns></returns>
         public override IDbCommand CreateCommand(string commandText, IDbConnection connection) {
-            return new MySqlCommand(commandText, (MySqlConnection)connection);
+            IDbCommand command = new MySqlCommand(commandText, (MySqlConnection)connection);
+            this.PrepareParams(command, null);
+
+            return command;
         }
 
         /// <summary>
@@ -67,7 +70,7 @@ namespace DatabaseWrapper.Core.Providers {
         /// </summary>
         /// <param name="commandText">The command text.</param>
         /// <param name="connection">The connection.</param>
-        /// <param name="parameters"></param>
+        /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
         public override IDbCommand CreateCommand(string commandText, IDbConnection connection, Dictionary<string, object> parameters) {
             IDbCommand command = new MySqlCommand(commandText, (MySqlConnection)connection);

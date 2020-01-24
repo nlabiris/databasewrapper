@@ -2,6 +2,7 @@
     public enum ClauseType {
         Where,
         And,
-        Or
+        Or,
+        Having
     }
 }

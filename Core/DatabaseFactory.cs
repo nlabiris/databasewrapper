@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DatabaseWrapper.Core.QueryGenerator;
+using System;
 using System.Reflection;
 
 namespace DatabaseWrapper.Core {

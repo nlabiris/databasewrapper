@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DatabaseWrapper.Core.QueryGenerator;
+using System.Collections.Generic;
 using System.Data;
 
 namespace DatabaseWrapper.Core {
@@ -51,7 +52,7 @@ namespace DatabaseWrapper.Core {
         protected void PrepareParams(IDbCommand command, Dictionary<string, object> parameters) {
             command.Prepare();
             foreach (KeyValuePair<string, object> kvp in parameters) {
-                command.AddWithValue($"@{kvp.Key}", kvp.Value);
+                command.AddWithValue($"{kvp.Key}", kvp.Value);
             }
         }
 
@@ -121,7 +122,7 @@ namespace DatabaseWrapper.Core {
         /// </summary>
         /// <param name="commandText">The command text.</param>
         /// <param name="connection">The connection.</param>
-        /// <param name="parameters"></param>
+        /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
         public abstract IDbCommand CreateCommand(string commandText, IDbConnection connection, Dictionary<string, object> parameters);
 

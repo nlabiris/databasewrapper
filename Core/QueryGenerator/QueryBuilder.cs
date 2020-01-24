@@ -44,24 +44,22 @@ namespace DatabaseWrapper.Core.QueryGenerator {
         protected string limit = "";
 
         /// <summary>
+        /// The where clause provided
+        /// </summary>
+        private bool whereClauseProvided = false;
+
+        /// <summary>
+        /// The having clause provided
+        /// </summary>
+        private bool havingClauseProvided = false;
+
+        /// <summary>
         /// Gets or sets the query parameters.
         /// </summary>
         /// <value>
         /// The query parameters.
         /// </value>
-        public Dictionary<string, object> queryParams { get; set; }
-
-        #region Constructor
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QueryBuilder"/> class.
-        /// </summary>
-        /// <param name="queryParams">The query parameters.</param>
-        public QueryBuilder(Dictionary<string, object> queryParams) {
-            this.queryParams = queryParams;
-        }
-
-        #endregion
+        public Dictionary<string, object> Parameters { get; set; }
 
         #region Query construction methods
 
@@ -70,8 +68,12 @@ namespace DatabaseWrapper.Core.QueryGenerator {
         /// </summary>
         /// <param name="columns">The columns.</param>
         /// <returns></returns>
-        public QueryBuilder Select(List<string> columns) {
-            this.columns = $" {string.Join(",", columns)} ";
+        public QueryBuilder Select(List<string> columns = null) {
+            if (columns != null) {
+                this.columns = $" {string.Join(",", columns)} ";
+            } else {
+                this.columns = " * ";
+            }
             return this;
         }
 
@@ -86,79 +88,170 @@ namespace DatabaseWrapper.Core.QueryGenerator {
         }
 
         /// <summary>
-        /// Joins the specified joins.
+        /// Inners the join.
         /// </summary>
-        /// <param name="joins">The joins.</param>
+        /// <param name="table1">The table1.</param>
+        /// <param name="column1">The column1.</param>
+        /// <param name="table2">The table2.</param>
+        /// <param name="column2">The column2.</param>
         /// <returns></returns>
-        /// <exception cref="Exception">Invalid join</exception>
-        public QueryBuilder Join(Dictionary<JoinType, string> joins) {
-            string joinsTemp = string.Empty;
-
-            foreach (KeyValuePair<JoinType, string> join in joins) {
-                switch (join.Key) {
-                    case JoinType.Inner:
-                        joinsTemp += " INNER JOIN ";
-                        break;
-                    case JoinType.Left:
-                        joinsTemp += " LEFT JOIN ";
-                        break;
-                    case JoinType.Right:
-                        joinsTemp += " RIGHT JOIN ";
-                        break;
-                    default:
-                        throw new Exception("Invalid join");
-                }
-                joinsTemp += join.Value;
-            }
-            this.joins = $" {joinsTemp} ";
+        public QueryBuilder InnerJoin(string table1, string column1, string table2, string column2) {
+            this.Join(JoinType.Inner, table1, column1, table2, column2);
             return this;
         }
 
         /// <summary>
-        /// Clauses the specified clauses.
+        /// Lefts the join.
         /// </summary>
-        /// <param name="clauses">The clauses.</param>
+        /// <param name="table1">The table1.</param>
+        /// <param name="column1">The column1.</param>
+        /// <param name="table2">The table2.</param>
+        /// <param name="column2">The column2.</param>
+        /// <returns></returns>
+        public QueryBuilder LeftJoin(string table1, string column1, string table2, string column2) {
+            this.Join(JoinType.Left, table1, column1, table2, column2);
+            return this;
+        }
+
+        /// <summary>
+        /// Rights the join.
+        /// </summary>
+        /// <param name="table1">The table1.</param>
+        /// <param name="column1">The column1.</param>
+        /// <param name="table2">The table2.</param>
+        /// <param name="column2">The column2.</param>
+        /// <returns></returns>
+        public QueryBuilder RightJoin(string table1, string column1, string table2, string column2) {
+            this.Join(JoinType.Right, table1, column1, table2, column2);
+            return this;
+        }
+
+        /// <summary>
+        /// Wheres the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public QueryBuilder Where(string key, object value) {
+            this.Clause(ClauseType.Where, key, value);
+            return this;
+        }
+
+        /// <summary>
+        /// Ands the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public QueryBuilder And(string key, object value) {
+            this.Clause(ClauseType.And, key, value);
+            return this;
+        }
+
+        /// <summary>
+        /// Ors the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public QueryBuilder Or(string key, object value) {
+            this.Clause(ClauseType.Or, key, value);
+            return this;
+        }
+
+        /// <summary>
+        /// Havings the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public QueryBuilder Having(string key, object value) {
+            this.Clause(ClauseType.Having, key, value);
+            return this;
+        }
+
+        /// <summary>
+        /// Joins the specified join.
+        /// </summary>
+        /// <param name="join">The join.</param>
+        /// <param name="table1">The table1.</param>
+        /// <param name="table2">The table2.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Invalid join</exception>
+        public QueryBuilder Join(JoinType join, string table1, string column1, string table2, string column2) {
+            string joinsTemp = string.Empty;
+
+            switch (join) {
+                case JoinType.Inner:
+                    this.joins += $" INNER JOIN {table1}.{column1} = {table2}.{column2}";
+                    break;
+                case JoinType.Left:
+                    this.joins += $" LEFT JOIN {table1}.{column1} = {table2}.{column2}";
+                    break;
+                case JoinType.Right:
+                    this.joins += $" RIGHT JOIN {table1}.{column1} = {table2}.{column2}";
+                    break;
+                default:
+                    throw new Exception("Invalid join");
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Clauses the specified clause.
+        /// </summary>
+        /// <param name="clause">The clause.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         /// <returns></returns>
         /// <exception cref="Exception">
         /// WHERE clause already provided once
         /// or
-        /// WHERE clause not provided
+        /// WHERE or HAVING clause not provided
         /// or
-        /// WHERE clause not provided
+        /// HAVING clause already provided once
         /// or
         /// Invalid clause
         /// </exception>
-        public QueryBuilder Clause(Dictionary<ClauseType, string> clauses) {
+        public QueryBuilder Clause(ClauseType clause, string key, object value) {
             string clausesTemp = string.Empty;
-            bool whereClauseProvided = false;
 
-            foreach (KeyValuePair<ClauseType, string> clause in clauses) {
-                switch (clause.Key) {
-                    case ClauseType.Where:
-                        if (whereClauseProvided) {
-                            throw new Exception("WHERE clause already provided once");
-                        }
-                        clausesTemp += " WHERE ";
-                        whereClauseProvided = true;
-                        break;
-                    case ClauseType.And:
-                        if (!whereClauseProvided) {
-                            throw new Exception("WHERE clause not provided");
-                        }
-                        clausesTemp += " AND ";
-                        break;
-                    case ClauseType.Or:
-                        if (!whereClauseProvided) {
-                            throw new Exception("WHERE clause not provided");
-                        }
-                        clausesTemp += " OR ";
-                        break;
-                    default:
-                        throw new Exception("Invalid clause");
-                }
-                clausesTemp += clause.Value;
+            switch (clause) {
+                case ClauseType.Where:
+                    if (this.whereClauseProvided && !this.havingClauseProvided) {
+                        throw new Exception("WHERE clause already provided once");
+                    }
+                    this.whereClauses += $" WHERE {key} = @{key} ";
+                    this.whereClauseProvided = true;
+                    break;
+                case ClauseType.And:
+                    if (!this.whereClauseProvided || !this.havingClauseProvided) {
+                        throw new Exception("WHERE or HAVING clause not provided");
+                    }
+                    this.whereClauses += $" AND {key} = @{key} ";
+                    break;
+                case ClauseType.Or:
+                    if (!this.whereClauseProvided || !this.havingClauseProvided) {
+                        throw new Exception("WHERE or HAVING clause not provided");
+                    }
+                    this.whereClauses += $" OR {key} = @{key} ";
+                    break;
+                case ClauseType.Having:
+                    if (!this.havingClauseProvided) {
+                        throw new Exception("HAVING clause already provided once");
+                    }
+                    this.whereClauses += $" HAVING {key} = @{key} ";
+                    break;
+                default:
+                    throw new Exception("Invalid clause");
             }
-            this.whereClauses = $" {clausesTemp} ";
+
+            if (this.Parameters == null) {
+                this.Parameters = new Dictionary<string, object>();
+            }
+            this.Parameters.Add($"@{key}", value);
+
             return this;
         }
 
@@ -173,32 +266,6 @@ namespace DatabaseWrapper.Core.QueryGenerator {
         }
 
         /// <summary>
-        /// Havings the specified clauses.
-        /// </summary>
-        /// <param name="clauses">The clauses.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Invalid clause</exception>
-        public QueryBuilder Having(Dictionary<ClauseType, string> clauses) {
-            string clausesTemp = string.Empty;
-
-            foreach (KeyValuePair<ClauseType, string> clause in clauses) {
-                switch (clause.Key) {
-                    case ClauseType.And:
-                        clausesTemp += " AND ";
-                        break;
-                    case ClauseType.Or:
-                        clausesTemp += " OR ";
-                        break;
-                    default:
-                        throw new Exception("Invalid clause");
-                }
-                clausesTemp += clause.Value;
-            }
-            this.havingClauses = $" {clausesTemp} ";
-            return this;
-        }
-
-        /// <summary>
         /// Orders the by.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
@@ -208,10 +275,10 @@ namespace DatabaseWrapper.Core.QueryGenerator {
         public QueryBuilder OrderBy(string columnName, OrderType order = OrderType.Asc) {
             switch (order) {
                 case OrderType.Asc:
-                    this.orderBy = "ASC";
+                    this.orderBy = $"{columnName} ASC ";
                     break;
                 case OrderType.Desc:
-                    this.orderBy = "DESC";
+                    this.orderBy = $"{columnName} DESC ";
                     break;
                 default:
                     throw new Exception("Invalid order type");
