@@ -60,7 +60,7 @@ namespace DatabaseWrapper.Core.Providers {
         /// <returns></returns>
         public override IDbCommand CreateCommand(string commandText, IDbConnection connection) {
             IDbCommand command = new MySqlCommand(commandText, (MySqlConnection)connection);
-            this.PrepareParams(command, null);
+            this.PrepareParams(command);
 
             return command;
         }

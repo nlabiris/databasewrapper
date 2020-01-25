@@ -49,10 +49,12 @@ namespace DatabaseWrapper.Core {
         /// </summary>
         /// <param name="command">The command.</param>
         /// <param name="parameters">The parameters.</param>
-        protected void PrepareParams(IDbCommand command, Dictionary<string, object> parameters) {
+        protected void PrepareParams(IDbCommand command, Dictionary<string, object> parameters = null) {
             command.Prepare();
-            foreach (KeyValuePair<string, object> kvp in parameters) {
-                command.AddWithValue($"{kvp.Key}", kvp.Value);
+            if (parameters != null) {
+                foreach (KeyValuePair<string, object> kvp in parameters) {
+                    command.AddWithValue(kvp.Key, kvp.Value);
+                }
             }
         }
 

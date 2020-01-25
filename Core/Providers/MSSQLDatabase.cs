@@ -57,7 +57,7 @@ namespace DatabaseWrapper.Core.Providers {
         /// <returns></returns>
         public override IDbCommand CreateCommand(string commandText, IDbConnection connection) {
             IDbCommand command = new SqlCommand(commandText, (SqlConnection)connection);
-            this.PrepareParams(command, null);
+            this.PrepareParams(command);
 
             return command;
         }
